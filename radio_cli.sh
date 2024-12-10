@@ -3,8 +3,11 @@
 # URL of the radio stream
 RADIO_URL="https://klassikr.streamabc.net/klr-kratnational-mp3-192-4723869"
 
+# project path
+PROJECT_PATH="/home/melik/Documents/projects/radio-cli"
+
 # the name of the output file added by date
-OUTPUT_FILE="klassik_radio_oesterreich_$(date +'%Y-%m-%d_%H-%M-%S').mp3"
+OUTPUT_FILE="${PROJECT_PATH}/saved-streams/klassik_radio_oesterreich_$(date +'%Y-%m-%d_%H-%M-%S').mp3"
 
 # check if mpv and curl is installed
 if ! command -v mpv &> /dev/null
@@ -22,13 +25,13 @@ then
 fi
 
 # trap signals to handle graceful exit
-trap 'echo "Stopping stream..."; ./cleanup.sh; exit 0' SIGINT SIGQUIT SIGTERM
+trap 'echo "Stopping stream..."; ${PROJECT_PATH}/cleanup.sh; exit 0' SIGINT SIGQUIT SIGTERM
 
 # download and play the radio stream
 echo "Downloading and playing radio stream..."
 
 # fetch the radio stream and save it to a file and play it with mpv
-curl -s "$RADIO_URL" | tee "./saved-streams/$OUTPUT_FILE" | mpv --no-video -
+curl -s "$RADIO_URL" | tee "$OUTPUT_FILE" | mpv --no-video -
 
 # get the process IDs of curl and mpv
 curl_pid=$!
@@ -39,4 +42,4 @@ wait $curl_pid
 wait $mpv_pid
 
 # after the stream is finished, clean up the saved streams if necessary
-./cleanup.sh
+${PROJECT_PATH}/cleanup.sh
